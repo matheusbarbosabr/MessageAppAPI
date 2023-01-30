@@ -25,6 +25,7 @@ public class DataContext : IdentityDbContext<ApplicationUser>
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
+        base.OnModelCreating(builder);
         builder.Entity<ApplicationUser>().ToTable("AspNetUsers").HasKey(t => t.Id);
     }
 
