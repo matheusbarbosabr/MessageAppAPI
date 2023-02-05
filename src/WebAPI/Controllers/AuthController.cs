@@ -51,7 +51,7 @@ public class AuthController : ControllerBase
 
         await _signInManager.SignInAsync(user, false);
 
-        return Ok(await GenerateJwtToken(registerUser.Email));
+        return StatusCode(201, GenerateJwtToken());
     }
 
     [HttpPost("login")]
@@ -65,20 +65,14 @@ public class AuthController : ControllerBase
         var result = await _signInManager.PasswordSignInAsync(loginUser.Email, loginUser.Password, false, true);
         if (result.Succeeded)
         {
-            return Ok(await GenerateJwtToken(loginUser.Email));
+            return Ok(GenerateJwtToken());
         }
 
         return BadRequest("User or password invalid");
     }
 
-    private async Task<string> GenerateJwtToken(string email)
+    private string GenerateJwtToken()
     {
-        var user = await _userManager.FindByEmailAsync(email);
-        if (user is null)
-        {
-            throw new Exception("This user does not exist");
-        }
-        
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(_jwtSettings.Secret);
         var tokenDescriptor = new SecurityTokenDescriptor
